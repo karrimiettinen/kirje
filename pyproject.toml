@@ -1,0 +1,22 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kirje"
+version = "0.0.1"
+authors = [
+  { name="Karri Miettinen", email="karri.miettinen@lab.fi" },
+]
+description = "A framing library for content with headers and body."
+readme = "README.md"
+requires-python = ">=3.11"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/karrimiettinen/kirje"
+"Bug Tracker" = "https://github.com/karrimiettinen/kirje/issues"
