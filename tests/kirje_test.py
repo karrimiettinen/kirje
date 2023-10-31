@@ -4,7 +4,7 @@ sys.path.append(os.getcwd())
 from io import StringIO
 from unittest import TestCase
 from unittest.mock import patch
-from src.kirje.kirje import Kirje, KirjeDetails
+from src.kirje import Kirje, KirjeDetails
 
 rows: list(tuple) = [
     ("content")

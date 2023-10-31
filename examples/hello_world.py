@@ -2,7 +2,7 @@ import os
 import sys
 sys.path.append(os.getcwd())
 
-from src.kirje.kirje import Kirje, KirjeDetails
+from src.kirje import Kirje, KirjeDetails
 
 details = KirjeDetails(
     headers={
