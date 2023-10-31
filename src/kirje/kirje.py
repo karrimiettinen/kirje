@@ -3,7 +3,7 @@ A framing library for content with headers and body.
 """
 from dataclasses import dataclass, field
 
-__version__ = "0.0.3"
+__version__ = "0.0.4"
 __author__ = "Karri Miettinen"
 __license__ = "MIT"
 __status__ = "Development"
@@ -22,12 +22,49 @@ class KirjeDetails:
     @default: 'center'
     """
 
+@dataclass
+class Corner:
+    top_right: str
+    bottom_right: str
+    bottom_left: str
+    top_left: str
+
+@dataclass
+class Tack:
+    up: str
+    right: str
+    down: str
+    left: str
+
+@dataclass
+class Decoration:
+    vertical: str
+    horizontal: str
+    corner: Corner
+    tack: Tack
+    cross: str
+
 class Kirje:
+    _ROUNDED: Decoration
+    _DEFAULT: Decoration
     PAD = int(2)
-    ROUNDED = "─│╭╯╰╮├┬┤┴┼"
     details: KirjeDetails
     def __init__(self, details: KirjeDetails = KirjeDetails()) -> None:
         self.details = details
+        self._DEFAULT = Decoration(
+            horizontal='-',
+            vertical='|',
+            corner=Corner('+', '+', '+', '+'),
+            tack=Tack('+', '+', '+', '+'),
+            cross='+'
+        )
+        self._ROUNDED = Decoration(
+            horizontal='─',
+            vertical='│',
+            corner=Corner('╮', '╯', '╰', '╭'),
+            tack=Tack('┴', '├', '┬', '┤'),
+            cross='┼'
+        )
         return None
     def replaceContent(self, content: str) -> None:
         self.details.content = content
@@ -72,50 +109,16 @@ class Kirje:
         width = width - self.PAD
         row = "{0} {1:<{width}} {0}".format(pad_char, row, width=width)
         return row
-    def displayRounded(self) -> None:
-        align = Kirje.convertAlignment(self.details.align_title)
-        width = self._getWidth()
-        title = " " + self.getTitle() + " "
-        print("{0}{1:{fill}{align}{width}}{2}".format(
-            self.ROUNDED[2],
-            title,
-            self.ROUNDED[5],
-            align=align,
-            fill=self.ROUNDED[0],
-            width=width))
-        headers = self.details.headers
-        for key in headers:
-            _key = str(key)
-            if (_key.lower() != 'title'):
-                row = f"{key}: {headers[key]}"
-                print(self.pad(self.ROUNDED[1], width, row))
-        print("{0}{1:{fill}{align}{width}}{2}".format(
-            self.ROUNDED[6],
-            '',
-            self.ROUNDED[8],
-            align=align,
-            fill=self.ROUNDED[0],
-            width=width))
-        rows = self.details.content.split('\n')
-        for row in rows:
-            row = self.pad(self.ROUNDED[1], width, row)
-            print(row)
-        print("{0}{1:{fill}{align}{width}}{2}".format(
-            self.ROUNDED[4],
-            '',
-            self.ROUNDED[3],
-            align=align,
-            fill=self.ROUNDED[0],
-            width=width))
-        return None
-    def displayDefault(self) -> None:
+    def displayBasicEnvelope(self, decoration: Decoration) -> None:
         align = Kirje.convertAlignment(self.details.align_title)
         width = self._getWidth()
         title = self.getTitle()
-        print("+{0:{fill}{align}{width}}+".format(
+        print("{0}{1:{fill}{align}{width}}{2}".format(
+            decoration.corner.top_left,
             title,
+            decoration.corner.top_right,
             align=align,
-            fill='-',
+            fill=decoration.horizontal,
             width=width))
         show_headers = False
         if ((len(self.details.headers) > 1) and (title != '')):
@@ -126,20 +129,24 @@ class Kirje:
                 _key = str(key)
                 if (_key.lower() != 'title'):
                     row = f"{key}: {headers[key]}"
-                    print(self.pad('|', width, row))
-            print("+{0:{fill}{align}{width}}+".format(
+                    print(self.pad(decoration.vertical, width, row))
+            print("{0}{1:{fill}{align}{width}}{2}".format(
+                decoration.tack.right,
                 '',
+                decoration.tack.left,
                 align=align,
-                fill='-',
+                fill=decoration.horizontal,
                 width=width))
         rows = self.details.content.split('\n')
         for row in rows:
-            row = self.pad('|', width, row)
+            row = self.pad(decoration.vertical, width, row)
             print(row)
-        print("+{0:{fill}{align}{width}}+".format(
+        print("{0}{1:{fill}{align}{width}}{2}".format(
+            decoration.corner.bottom_left,
             '',
+            decoration.corner.bottom_right,
             align=align,
-            fill='-',
+            fill=decoration.horizontal,
             width=width))
         return None
     def display(self, style = 'default') -> None:
@@ -147,7 +154,9 @@ class Kirje:
             style = self.details.style
         match style:
             case 'rounded':
-                self.displayRounded()
+                self.displayBasicEnvelope(self._ROUNDED)
+                # self.displayRounded()
             case 'default':
-                self.displayDefault()
+                # self.displayDefault()
+                self.displayBasicEnvelope(self._DEFAULT)
         return None

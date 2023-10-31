@@ -16,8 +16,9 @@ details = KirjeDetails(
 
 message = Kirje(details)
 
-print("Default style letter:")
-message.display()
-print("")
-print("Rounded style letter:")
-message.display("rounded")
+styles = ["Default", "Rounded"]
+
+for style in styles:
+    print(f"{style} style letter:")
+    message.display(style.lower())
+    print("")
