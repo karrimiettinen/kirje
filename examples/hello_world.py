@@ -16,7 +16,7 @@ details = KirjeDetails(
 
 message = Kirje(details)
 
-styles = ["Default", "Rounded"]
+styles = ["Default", "Rounded", "Doubled", "Streamlined"]
 
 for style in styles:
     print(f"{style} style letter:")

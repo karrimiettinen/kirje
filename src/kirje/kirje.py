@@ -3,7 +3,7 @@ A framing library for content with headers and body.
 """
 from dataclasses import dataclass, field
 
-__version__ = "0.0.4"
+__version__ = "0.1.0"
 __author__ = "Karri Miettinen"
 __license__ = "MIT"
 __status__ = "Development"
@@ -39,20 +39,40 @@ class Tack:
 @dataclass
 class Decoration:
     vertical: str
+    separator: str
     horizontal: str
     corner: Corner
     tack: Tack
     cross: str
 
 class Kirje:
-    _ROUNDED: Decoration
     _DEFAULT: Decoration
+    _DOUBLED: Decoration
+    _ROUNDED: Decoration
+    _STREAMLINED: Decoration
     PAD = int(2)
     details: KirjeDetails
     def __init__(self, details: KirjeDetails = KirjeDetails()) -> None:
         self.details = details
         self._DEFAULT = Decoration(
             horizontal='-',
+            separator='-',
+            vertical='|',
+            corner=Corner('+', '+', '+', '+'),
+            tack=Tack('+', '+', '+', '+'),
+            cross='+'
+        )
+        self._DOUBLED = Decoration(
+            horizontal='=',
+            separator='=',
+            vertical='‖',
+            corner=Corner('+', '+', '+', '+'),
+            tack=Tack('+', '+', '+', '+'),
+            cross='+'
+        )
+        self._STREAMLINED = Decoration(
+            horizontal='=',
+            separator='-',
             vertical='|',
             corner=Corner('+', '+', '+', '+'),
             tack=Tack('+', '+', '+', '+'),
@@ -60,6 +80,7 @@ class Kirje:
         )
         self._ROUNDED = Decoration(
             horizontal='─',
+            separator='─',
             vertical='│',
             corner=Corner('╮', '╯', '╰', '╭'),
             tack=Tack('┴', '├', '┬', '┤'),
@@ -135,8 +156,8 @@ class Kirje:
                 '',
                 decoration.tack.left,
                 align=align,
-                fill=decoration.horizontal,
-                width=width))
+                fill=decoration.separator,
+                width=width)) # headers and body separator
         rows = self.details.content.split('\n')
         for row in rows:
             row = self.pad(decoration.vertical, width, row)
@@ -153,10 +174,12 @@ class Kirje:
         if (style == None):
             style = self.details.style
         match style:
+            case 'doubled':
+                self.displayBasicEnvelope(self._DOUBLED)
+            case 'streamlined':
+                self.displayBasicEnvelope(self._STREAMLINED)
             case 'rounded':
                 self.displayBasicEnvelope(self._ROUNDED)
-                # self.displayRounded()
             case 'default':
-                # self.displayDefault()
                 self.displayBasicEnvelope(self._DEFAULT)
         return None
