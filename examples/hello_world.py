@@ -22,3 +22,7 @@ for style in styles:
     print(f"{style} style letter:")
     message.display(style.lower())
     print("")
+
+print("Headers separated with dash:")
+details.header_separation = ' - '
+message.display("streamlined")

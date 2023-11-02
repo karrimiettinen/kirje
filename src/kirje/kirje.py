@@ -3,7 +3,7 @@ A framing library for content with headers and body.
 """
 from dataclasses import dataclass, field
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 __author__ = "Karri Miettinen"
 __license__ = "MIT"
 __status__ = "Development"
@@ -11,6 +11,7 @@ __status__ = "Development"
 @dataclass
 class KirjeDetails:
     content: str = ""
+    header_separation: str = ": "
     fixed_width: int = int(0)
     headers: dict = field(default_factory=dict)
     style: str = "default"
@@ -110,7 +111,7 @@ class Kirje:
         else:
             for key in self.details.headers:
                 value = self.details.headers[key]
-                header = f"{key}: {value}"
+                header = f"{key}{self.details.header_separation}{value}"
                 if (len(header) > width):
                     width = len(header)
             rows = self.details.content.split('\n')
@@ -149,7 +150,7 @@ class Kirje:
             for key in headers:
                 _key = str(key)
                 if (_key.lower() != 'title'):
-                    row = f"{key}: {headers[key]}"
+                    row = f"{key}{self.details.header_separation}{headers[key]}"
                     print(self.pad(decoration.vertical, width, row))
             print("{0}{1:{fill}{align}{width}}{2}".format(
                 decoration.tack.right,
@@ -170,16 +171,21 @@ class Kirje:
             fill=decoration.horizontal,
             width=width))
         return None
-    def display(self, style = 'default') -> None:
+    def display(self, style: str = None) -> None:
+        """
+        Parameters
+        ----
+            style (str): "default" | "doubled" | "rounded" | "streamlined"
+        """
         if (style == None):
             style = self.details.style
         match style:
-            case 'doubled':
-                self.displayBasicEnvelope(self._DOUBLED)
-            case 'streamlined':
-                self.displayBasicEnvelope(self._STREAMLINED)
-            case 'rounded':
-                self.displayBasicEnvelope(self._ROUNDED)
             case 'default':
                 self.displayBasicEnvelope(self._DEFAULT)
+            case 'doubled':
+                self.displayBasicEnvelope(self._DOUBLED)
+            case 'rounded':
+                self.displayBasicEnvelope(self._ROUNDED)
+            case 'streamlined':
+                self.displayBasicEnvelope(self._STREAMLINED)
         return None
